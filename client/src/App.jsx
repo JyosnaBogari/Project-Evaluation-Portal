@@ -16,6 +16,7 @@ import StudentDashboard from './pages/student/Dashboard';
 import SubmitProject from './pages/student/SubmitProject';
 import FacultyDashboard from './pages/faculty/Dashboard';
 import AdminDashboard from './pages/admin/Dashboard';
+import FacultyAssignmentPage from './pages/admin/FacultyAssignmentPage';
 import ManageUsers from './pages/admin/ManageUsers';
 import ManageDeadlines from './pages/admin/ManageDeadlines';
 import InvitationPage from './pages/student/InvitationPage';
@@ -80,6 +81,14 @@ export default function App() {
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <ManageDeadlines />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="faculty-assignment"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <FacultyAssignmentPage />
                   </ProtectedRoute>
                 }
               />

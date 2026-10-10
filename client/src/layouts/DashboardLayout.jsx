@@ -12,7 +12,8 @@ import {
   Moon,
   Menu,
   X,
-  FileCheck
+  FileCheck,
+  UserRoundCheck
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -41,6 +42,7 @@ export default function DashboardLayout() {
     } else if (isAdmin) {
       links.push(
         { path: '/', label: 'System Analytics', icon: LayoutDashboard },
+        { path: '/faculty-assignment', label: 'Faculty Assignment', icon: UserRoundCheck },
         { path: '/users', label: 'Manage Users', icon: Users },
         { path: '/deadlines', label: 'Manage Deadlines', icon: Calendar }
       );

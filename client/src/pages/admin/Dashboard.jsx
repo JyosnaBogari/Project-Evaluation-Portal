@@ -19,7 +19,32 @@ import {
   MessageSquare,
   ShieldAlert,
   Send,
+  Clock3,
+  FileCheck,
 } from 'lucide-react';
+
+const AWAITING_ASSIGNMENT_STATUSES = new Set(['uniqueness_checked', 'submitted']);
+
+function MetricCard({ label, value, icon, accent }) {
+  const accentClasses = {
+    blue: 'text-blue-500',
+    amber: 'text-amber-500',
+    emerald: 'text-emerald-500',
+    purple: 'text-purple-500',
+    cyan: 'text-cyan-500',
+    indigo: 'text-indigo-500',
+  };
+
+  return (
+    <div className="glass-panel p-6 rounded-2xl space-y-2">
+      <div className="flex justify-between items-center text-slate-500">
+        <span className="text-xs font-bold uppercase tracking-wider">{label}</span>
+        <span className={accentClasses[accent] || accentClasses.blue}>{icon}</span>
+      </div>
+      <p className="text-3xl font-extrabold tracking-tight">{value}</p>
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -152,40 +177,43 @@ export default function AdminDashboard() {
       )}
 
       {/* Metrics Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass-panel p-6 rounded-2xl space-y-2">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Students</span>
-            <Users className="w-5 h-5 text-blue-500" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight">{summary?.totalStudents || 0}</p>
-        </div>
-
-        <div className="glass-panel p-6 rounded-2xl space-y-2">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Faculty Reviewers</span>
-            <UserCheck className="w-5 h-5 text-purple-500" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight">{summary?.totalFaculty || 0}</p>
-        </div>
-
-        <div className="glass-panel p-6 rounded-2xl space-y-2">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Project Submissions</span>
-            <FolderGit2 className="w-5 h-5 text-indigo-500" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight">{summary?.totalProjects || 0}</p>
-        </div>
-
-        <div className="glass-panel p-6 rounded-2xl space-y-2">
-          <div className="flex justify-between items-center text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider">Average Score</span>
-            <Award className="w-5 h-5 text-emerald-500" />
-          </div>
-          <p className="text-3xl font-extrabold tracking-tight">
-            {summary?.averageScore > 0 ? `${summary.averageScore} / 100` : 'N/A'}
-          </p>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <MetricCard
+          label="Total Projects"
+          value={projects.length}
+          icon={<FolderGit2 className="w-5 h-5 text-blue-500" />}
+          accent="blue"
+        />
+        <MetricCard
+          label="Awaiting Faculty Assignment"
+          value={projects.filter(project => !project.assignedFaculty && AWAITING_ASSIGNMENT_STATUSES.has(project.status)).length}
+          icon={<Clock3 className="w-5 h-5 text-amber-500" />}
+          accent="amber"
+        />
+        <MetricCard
+          label="Assigned Projects"
+          value={projects.filter(project => project.assignedFaculty).length}
+          icon={<UserCheck className="w-5 h-5 text-emerald-500" />}
+          accent="emerald"
+        />
+        <MetricCard
+          label="Pending Faculty Reviews"
+          value={projects.filter(project => ['faculty_review', 'faculty_accepted', 'faculty_changes_requested'].includes(project.status)).length}
+          icon={<FileCheck className="w-5 h-5 text-purple-500" />}
+          accent="purple"
+        />
+        <MetricCard
+          label="Total Faculty"
+          value={facultyList.length}
+          icon={<Users className="w-5 h-5 text-cyan-500" />}
+          accent="cyan"
+        />
+        <MetricCard
+          label="Available Faculty"
+          value={facultyList.filter(faculty => faculty.role === 'faculty' && faculty.isActive !== false && (faculty.availability || faculty.facultyProfile?.availability || 'available') !== 'unavailable').length}
+          icon={<Award className="w-5 h-5 text-indigo-500" />}
+          accent="indigo"
+        />
       </div>
 
       {/* Charts Section */}
